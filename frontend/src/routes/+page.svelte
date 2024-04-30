@@ -95,6 +95,8 @@
 				return 'BBC ALBA';
 			case 28:
 				return 'S4C';
+			case 29:
+				return 'BBC WORLD NEWS AMERICA HD';
 			default:
 				return 'Unknown';
 		}

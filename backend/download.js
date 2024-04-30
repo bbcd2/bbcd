@@ -102,6 +102,7 @@ async function main(startTimestamp, endTimestamp, jobId, client, channel) {
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_parliament/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_alba/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:s4cpbs/",
+    "	https://vs-cmaf-pushb-ntham-gcomm.live.cf.md.bbci.co.uk/x=4/i=urn:bbc:pips:service:bbc_world_news_north_america/",
   ];
   const urlPrefix = urlPrefixes[channel];
   // Download segment initialization files for both audio and video
