@@ -2,16 +2,16 @@ import axios from 'axios';
 export const actions = {
 	default: async ({ request }) => {
 		const data = await request.formData();
-		const channel = data.get('channel');
+		const channel = Number(data.get('channel'));
 		// Construct the start and end timestamps
-		const startMonth = data.get('startMonth');
-		const startDay = data.get('startDay');
-		const startHour = data.get('startHour');
-		const startMinute = data.get('startMinute');
-		const endMonth = data.get('endMonth');
-		const endDay = data.get('endDay');
-		const endHour = data.get('endHour');
-		const endMinute = data.get('endMinute');
+		const startMonth = Number(data.get('startMonth'));
+		const startDay = Number(data.get('startDay'));
+		const startHour = Number(data.get('startHour'));
+		const startMinute = Number(data.get('startMinute'));
+		const endMonth = Number(data.get('endMonth'));
+		const endDay = Number(data.get('endDay'));
+		const endHour = Number(data.get('endHour'));
+		const endMinute = Number(data.get('endMinute'));
 		// Make the timestamps in London time
 		let startTimestamp =
 			new Date(Date.UTC(2024, startMonth - 1, startDay, startHour, startMinute)).getTime() / 1000;
