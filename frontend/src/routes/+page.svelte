@@ -1,6 +1,25 @@
 <script lang="ts">
 	import { createClient } from '@supabase/supabase-js';
 	import { onMount } from 'svelte';
+	import {
+		Label,
+		Input,
+		Select,
+		Button,
+		Toast,
+		Table,
+		TableBody,
+		TableBodyCell,
+		TableBodyRow,
+		TableHead,
+		TableHeadCell
+	} from 'flowbite-svelte';
+	import {
+		AngleRightOutline,
+		ArrowRightOutline,
+		LinkOutline,
+		PaperPlaneOutline
+	} from 'flowbite-svelte-icons';
 	export let data;
 	$: ({ session, supabase } = data);
 	// Get the last 15 records from the recordings table
@@ -141,208 +160,170 @@
 		timeZone: 'Europe/London',
 		minute: 'numeric'
 	});
-	let endMonth = new Date().toLocaleString('en-GB', {
-		timeZone: 'Europe/London',
-		month: 'numeric'
-	});
-	let endDay = new Date().toLocaleString('en-GB', { timeZone: 'Europe/London', day: 'numeric' });
-	let endHour = new Date().toLocaleString('en-GB', { timeZone: 'Europe/London', hour: 'numeric' });
-	let endMinute = new Date().toLocaleString('en-GB', {
-		timeZone: 'Europe/London',
-		minute: 'numeric'
-	});
 	let channel: number;
+	let length = 0;
+	let lengthUnit = 1;
+	let endHour = 0;
+	let endMinute = 0;
+	let startSeconds = 0;
 	async function submitForm() {
 		const form = document.querySelector('form');
 
 		form?.submit();
 	}
+	// Set the end time based on the start time and length(and keep it updated)
+	$: {
+		let totalMinutes = 0;
+		if (lengthUnit === 0) {
+			totalMinutes = Math.floor(length / 60);
+		} else if (lengthUnit === 1) {
+			totalMinutes = length;
+		} else if (lengthUnit === 2) {
+			totalMinutes = length * 60;
+		}
+		endHour = parseInt(startHour) + Math.floor(totalMinutes / 60);
+		endMinute = parseInt(startMinute) + (totalMinutes % 60);
+		if (endMinute > 59) {
+			endHour++;
+			endMinute -= 60;
+		}
+		endHour = endHour.toString().padStart(2, '0');
+		endMinute = endMinute.toString().padStart(2, '0');
+	}
 </script>
 
 {#if session}
-	<h4>Start time</h4>
-	<div class="grid l">
-		<div class="s1">
-			<div class="field label border round">
-				<input type="number" bind:value={startMonth} />
-				<label>Month</label>
+	<aside
+		class="border-2 p-4 mx-[22rem] md:mx-[8rem] my-10 border-black dark:border-white lg:grid md:grid lg:grid-cols-3 md:grid-cols-3"
+	>
+		<div class="flex flex-col justify-start items-start">
+			<!-- Left aligned -->
+			<h1 class="text-3xl pb-2 font-bold">From</h1>
+			<div class="flex flex-row">
+				<div class="w-20">
+					<Input
+						size="md"
+						min="0"
+						max="23"
+						type="number"
+						bind:value={startDay}
+						class="rounded-r-none font-semibold"
+					/>
+				</div>
+				<div class="w-20">
+					<Input
+						size="md"
+						min="0"
+						max="59"
+						type="number"
+						bind:value={startMonth}
+						class="rounded-l-none font-semibold"
+					/>
+				</div>
 			</div>
-		</div>
-		<!--Day, hour, minute, second-->
-		<div class="s1">
-			<div class="field label border round">
-				<input type="number" bind:value={startDay} />
-				<label>Day</label>
-			</div>
-		</div>
-		<div class="s1">
-			<div class="field label border round">
-				<input type="number" bind:value={startHour} />
-				<label>Hour</label>
-			</div>
-		</div>
-		<div class="s1">
-			<div class="field label border round">
-				<input type="number" bind:value={startMinute} />
-				<label>Minute</label>
-			</div>
-		</div>
-	</div>
-	<div class="s m">
-		<div class="field label border round">
-			<input type="number" bind:value={startMonth} />
-			<label>Month</label>
-		</div>
-		<div class="field label border round">
-			<input type="number" bind:value={startDay} />
-			<label>Day</label>
-		</div>
-		<div class="field label border round">
-			<input type="number" bind:value={startHour} />
-			<label>Hour</label>
-		</div>
-		<div class="field label border round">
-			<input type="number" bind:value={startMinute} />
-			<label>Minute</label>
-		</div>
-	</div>
-	<h4>End time</h4>
-	<div class="grid l">
-		<div class="s1">
-			<div class="field label border round">
-				<input type="number" bind:value={endMonth} />
-				<label>Month</label>
-			</div>
-		</div>
-		<!--Day, hour, minute, second-->
-		<div class="s1">
-			<div class="field label border round">
-				<input type="number" bind:value={endDay} />
-				<label>Day</label>
-			</div>
-		</div>
-		<div class="s1">
-			<div class="field label border round">
-				<input type="number" bind:value={endHour} />
-				<label>Hour</label>
-			</div>
-		</div>
-		<div class="s1">
-			<div class="field label border round">
-				<input type="number" bind:value={endMinute} />
-				<label>Minute</label>
-			</div>
-		</div>
-	</div>
-	<div class="s m">
-		<div class="field label border round">
-			<input type="number" bind:value={endMonth} />
-			<label>Month</label>
-		</div>
-		<div class="field label border round">
-			<input type="number" bind:value={endDay} />
-			<label>Day</label>
-		</div>
-		<div class="field label border round">
-			<input type="number" bind:value={endHour} />
-			<label>Hour</label>
-		</div>
-		<div class="field label border round">
-			<input type="number" bind:value={endMinute} />
-			<label>Minute</label>
-		</div>
-	</div>
-	<div class="grid l">
-		<div class="s4">
-			<div class="field label suffix border round">
-				<select bind:value={channel}>
-					<option value="0">BBC ONE HD</option>
-					<option value="1">BBC ONE WALES HD</option>
-					<option value="2">BBC ONE SCOTLAND HD</option>
-					<option value="3">BBC ONE NORTHERN IRELAND HD</option>
-					<option value="4">BBC ONE CHANNEL ISLANDS HD</option>
-					<option value="5">BBC ONE EAST HD</option>
-					<option value="6">BBC ONE EAST MIDLANDS HD</option>
-					<option value="7">BBC ONE EAST YORKSHIRE & LINCOLNSHIRE HD</option>
-					<option value="8">BBC ONE LONDON HD</option>
-					<option value="9">BBC ONE NORTH EAST HD</option>
-					<option value="10">BBC ONE NORTH WEST HD</option>
-					<option value="11">BBC ONE SOUTH HD</option>
-					<option value="12">BBC ONE SOUTH EAST HD</option>
-					<option value="13">BBC ONE SOUTH WEST HD</option>
-					<option value="14">BBC ONE WEST HD</option>
-					<option value="15">BBC ONE WEST MIDLANDS HD</option>
-					<option value="16">BBC ONE YORKSHIRE HD</option>
-					<option value="17">BBC TWO HD</option>
-					<option value="18">BBC TWO NORTHERN IRELAND HD</option>
-					<option value="19">BBC TWO WALES DIGITAL</option>
-					<option value="20">BBC THREE HD</option>
-					<option value="21">BBC FOUR HD</option>
-					<option value="22">CBBC HD</option>
-					<option value="23">CBEEBIES HD</option>
-					<option value="24">BBC SCOTLAND HD</option>
-					<option value="25">BBC NEWS CHANNEL HD</option>
-					<option value="26">BBC PARLIAMENT</option>
-					<option value="27">BBC ALBA</option>
-					<option value="28">S4C</option>
-				</select>
 
-				<label>Channel</label>
-				<i>arrow_drop_down</i>
+			<div class="flex items-center mt-2">
+				<div class="w-20">
+					<Input
+						size="md"
+						min="0"
+						max="23"
+						type="number"
+						bind:value={startHour}
+						class="rounded-r-none font-semibold"
+					/>
+				</div>
+				<div class="w-20">
+					<Input
+						size="md"
+						min="0"
+						max="59"
+						type="number"
+						bind:value={startMinute}
+						class="rounded-l-none font-semibold"
+					/>
+				</div>
 			</div>
+			<Select
+				size="md"
+				class="w-full mt-2 font-semibold"
+				items={[
+					{ value: '0', name: 'BBC ONE HD' },
+					{ value: '1', name: 'BBC ONE WALES HD' },
+					{ value: '2', name: 'BBC ONE SCOTLAND HD' },
+					{ value: '3', name: 'BBC ONE NORTHERN IRELAND HD' },
+					{ value: '4', name: 'BBC ONE CHANNEL ISLANDS HD' },
+					{ value: '5', name: 'BBC ONE EAST HD' },
+					{ value: '6', name: 'BBC ONE EAST MIDLANDS HD' },
+					{ value: '7', name: 'BBC ONE EAST YORKSHIRE & LINCOLNSHIRE HD' },
+					{ value: '8', name: 'BBC ONE LONDON HD' },
+					{ value: '9', name: 'BBC ONE NORTH EAST HD' },
+					{ value: '10', name: 'BBC ONE NORTH WEST HD' },
+					{ value: '11', name: 'BBC ONE SOUTH HD' },
+					{ value: '12', name: 'BBC ONE SOUTH EAST HD' },
+					{ value: '13', name: 'BBC ONE SOUTH WEST HD' },
+					{ value: '14', name: 'BBC ONE WEST HD' },
+					{ value: '15', name: 'BBC ONE WEST MIDLANDS HD' },
+					{ value: '16', name: 'BBC ONE YORKSHIRE HD' },
+					{ value: '17', name: 'BBC TWO HD' },
+					{ value: '18', name: 'BBC TWO NORTHERN IRELAND HD' },
+					{ value: '19', name: 'BBC TWO WALES DIGITAL' },
+					{ value: '20', name: 'BBC THREE HD' },
+					{ value: '21', name: 'BBC FOUR HD' },
+					{ value: '22', name: 'CBBC HD' },
+					{ value: '23', name: 'CBEEBIES HD' },
+					{ value: '24', name: 'BBC SCOTLAND HD' },
+					{ value: '25', name: 'BBC NEWS CHANNEL HD' },
+					{ value: '26', name: 'BBC PARLIAMENT' },
+					{ value: '27', name: 'BBC ALBA' },
+					{ value: '28', name: 'S4C' }
+				]}
+				bind:value={channel}
+				placeholder="Select channel..."
+			/>
 		</div>
-	</div>
-	<div class="s m">
-		<div class="field label suffix border round">
-			<select bind:value={channel}>
-				<option value="0">BBC ONE HD</option>
-				<option value="1">BBC ONE WALES HD</option>
-				<option value="2">BBC ONE SCOTLAND HD</option>
-				<option value="3">BBC ONE NORTHERN IRELAND HD</option>
-				<option value="4">BBC ONE CHANNEL ISLANDS HD</option>
-				<option value="5">BBC ONE EAST HD</option>
-				<option value="6">BBC ONE EAST MIDLANDS HD</option>
-				<option value="7">BBC ONE EAST YORKSHIRE & LINCOLNSHIRE HD</option>
-				<option value="8">BBC ONE LONDON HD</option>
-				<option value="9">BBC ONE NORTH EAST HD</option>
-				<option value="10">BBC ONE NORTH WEST HD</option>
-				<option value="11">BBC ONE SOUTH HD</option>
-				<option value="12">BBC ONE SOUTH EAST HD</option>
-				<option value="13">BBC ONE SOUTH WEST HD</option>
-				<option value="14">BBC ONE WEST HD</option>
-				<option value="15">BBC ONE WEST MIDLANDS HD</option>
-				<option value="16">BBC ONE YORKSHIRE HD</option>
-				<option value="17">BBC TWO HD</option>
-				<option value="18">BBC TWO NORTHERN IRELAND HD</option>
-				<option value="19">BBC TWO WALES DIGITAL</option>
-				<option value="20">BBC THREE HD</option>
-				<option value="21">BBC FOUR HD</option>
-				<option value="22">CBBC HD</option>
-				<option value="23">CBEEBIES HD</option>
-				<option value="24">BBC SCOTLAND HD</option>
-				<option value="25">BBC NEWS CHANNEL HD</option>
-				<option value="26">BBC PARLIAMENT</option>
-				<option value="27">BBC ALBA</option>
-				<option value="28">S4C</option>
-			</select>
+		<div class="flex flex-col justify-center items-center py-2">
+			<ArrowRightOutline />
+		</div>
 
-			<label>Channel</label>
-			<i>arrow_drop_down</i>
+		<div class="flex flex-col">
+			<!-- Right aligned -->
+			<h1 class="text-3xl pb-2 self-start font-bold">Length</h1>
+			<div class="flex flex-row">
+				<div class="mt-2 w-20">
+					<Input size="md" type="number" bind:value={length} min="0" class="rounded-r-none font-semibold" />
+				</div>
+				<div class="mt-2 w-100">
+					<Select
+						size="md"
+						class="font-semibold w-full rounded-l-none"
+						items={[
+							{ value: 0, name: 'Seconds' },
+							{ value: 1, name: 'Minutes' },
+							{ value: 2, name: 'Hours' }
+						]}
+						bind:value={lengthUnit}
+					/>
+				</div>
+			</div>
+			<h6 class="font-semibold text-md pt-4 self-start">Ends at {endHour}:{endMinute}</h6>
 		</div>
+	</aside>
+	<div class="absolute flex flex-col justify-center items-center w-full -translate-y-[3.8rem]">
+		<Button class="bg-black dark:bg-white dark:text-black font-bold" buttonClass="font-bold">Record</Button>
+		<p class="pb-4">Status: Combining Audio & Video</p>
 	</div>
-	<button on:click={submitForm}>Submit</button>
 {/if}
 <form method="post">
 	<input type="hidden" name="startMonth" bind:value={startMonth} required />
 	<input type="hidden" name="startDay" bind:value={startDay} required />
 	<input type="hidden" name="startHour" bind:value={startHour} required />
 	<input type="hidden" name="startMinute" bind:value={startMinute} required />
-	<input type="hidden" name="endMonth" bind:value={endMonth} required />
-	<input type="hidden" name="endDay" bind:value={endDay} required />
-	<input type="hidden" name="endHour" bind:value={endHour} required />
-	<input type="hidden" name="endMinute" bind:value={endMinute} required />
+	<input type="hidden" name="startSeconds" bind:value={startSeconds} required />
 	<input type="hidden" name="channel" bind:value={channel} required />
 	<input type="hidden" name="user" value={id} required />
+	<input type="hidden" name="length" bind:value={length} required />
+	<input type="hidden" name="lengthUnit" bind:value={lengthUnit} required />
 </form>
 
 <div class="space" />
@@ -350,34 +331,69 @@
 {#await getRecordings()}
 	<p>Fetching recordings...</p>
 {:then recordings}
-	<table class="border scroll">
-		<tr>
-			<th>Start Time</th>
-			<th>End Time</th>
-			<th>Channel</th>
-			<th>Status</th>
-			<th>Download</th>
-		</tr>
-
-		{#each recordings ?? [] as recording}
-			<tr>
-				<td
-					>{new Date(recording.rec_start * 1000).toLocaleString('en-GB', {
-						timeZone: 'Europe/London'
-					})}</td
-				>
-				<td
-					>{new Date(recording.rec_end * 1000).toLocaleString('en-GB', {
-						timeZone: 'Europe/London'
-					})}</td
-				>
-				<td>{channelString(parseInt(recording.channel))}</td>
-				<td>{statusString(recording.status)}</td>
-				<td><u><a href="/express/download/{recording.uuid}">Click</a></u></td>
-			</tr>
-		{/each}
-	</table>
+	<div class="flex justify-center">
+		<table class="mx-[22rem] my-2 border-black dark:border-white w-full table-auto">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Time</th>
+					<th>Channel</th>
+					<th>Status</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody class="divide-y border-2 border-black dark:border-white">
+				{#each recordings ?? [] as recording}
+					<tr
+						><td class="p-2 border-2 border-black dark:border-white">
+							{(() => {
+								const startDate = new Date(recording.rec_start * 1000);
+								const endDate = new Date(recording.rec_end * 1000);
+								const sameDay =
+									startDate.getDate() === endDate.getDate() &&
+									startDate.getMonth() === endDate.getMonth() &&
+									startDate.getFullYear() === endDate.getFullYear();
+								return sameDay
+									? startDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit' })
+									: startDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit' }) +
+											' - ' +
+											endDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit' });
+							})()}
+						</td>
+						<td class="p-2 border-2 border-black dark:border-white">
+							{(() => {
+								const startDate = new Date(recording.rec_start * 1000);
+								const endDate = new Date(recording.rec_end * 1000);
+								return (
+									startDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) +
+									' - ' +
+									endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+								);
+							})()}
+						</td>
+						<td class="p-2 border-2 border-black dark:border-white"
+							>{channelString(recording.channel)}</td
+						>
+						<td class="p-2 border-2 border-black dark:border-white"
+							>{statusString(recording.status)}</td
+						>
+						<td class="p-2 border-2 border-black dark:border-white"
+							><a href="/express/download/{recording.uuid}"><LinkOutline /></a></td
+						>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 {:catch error}
 	<p>Failed to fetch recordings: {error.message}</p>
 {/await}
-<div id="snackbar" class="snackbar error">Some text here</div>
+<div class="flex justify-center hidden">
+	<Toast
+		dismissable={true}
+		contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+	>
+		<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
+		<div class="ps-4 text-sm font-normal">Message sent successfully.</div>
+	</Toast>
+</div>

@@ -8,15 +8,20 @@ export const actions = {
 		const startDay = Number(data.get('startDay'));
 		const startHour = Number(data.get('startHour'));
 		const startMinute = Number(data.get('startMinute'));
-		const endMonth = Number(data.get('endMonth'));
-		const endDay = Number(data.get('endDay'));
-		const endHour = Number(data.get('endHour'));
-		const endMinute = Number(data.get('endMinute'));
+		var duration = Number(data.get('duration'));
+		const durationUnit = data.get('durationUnit');
+		// If duration unit is 0, seconds, 1, minutes, 2, hours
+		if (durationUnit === '0') {
+			duration = duration;
+		} else if (durationUnit === '1') {
+			duration = duration * 60;
+		} else if (durationUnit === '2') {
+			duration = duration * 3600;
+		}
 		// Make the timestamps in London time
 		let startTimestamp =
 			new Date(Date.UTC(2024, startMonth - 1, startDay, startHour, startMinute)).getTime() / 1000;
-		let endTimestamp =
-			new Date(Date.UTC(2024, endMonth - 1, endDay, endHour, endMinute)).getTime() / 1000;
+		let endTimestamp = startTimestamp + duration * 60;
 		// Adjust the timestamps for the time zone difference
 		startTimestamp -= 3600;
 		endTimestamp -= 3600;

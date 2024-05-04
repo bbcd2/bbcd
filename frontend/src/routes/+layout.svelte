@@ -30,34 +30,40 @@
 	async function signOut() {
 		await supabase.auth.signOut();
 	}
+	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, Dropdown, DropdownItem, DropdownDivider, DarkMode, Button, Footer, FooterBrand, FooterCopyright, FooterIcon, FooterLink, FooterLinkGroup } from 'flowbite-svelte';
+	import { ChevronDownOutline } from 'flowbite-svelte-icons'
+	import { page } from '$app/stores';
+	$: activeUrl = $page.url.pathname;
+	import { } from 'flowbite-svelte';
+
+	let btnClass = 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-xl p-2';
 </script>
 
-<header class="h-4">
-	<nav>
-		<a href="/"><h5 class="max left-align">BBCD2</h5></a>
-		<div class="max" />
-		{#if session}
-			<button class="transparent no-round" data-ui="menu">
-				<div class="row">
-					<img src={session?.user.user_metadata.picture} class="circle" />
-					<p>Hi, {session.user.user_metadata.custom_claims.global_name}</p>
-					<i>arrow_drop_down</i>
-				</div>
-				<menu>
-					<a href="/account/">Your account</a>
-					<a href="/account/recordings/">Your recordings</a>
-					<a on:click={signOut}>Sign out</a>
-				</menu>
-			</button>
-		{:else}
-			<button class="transparent" on:click={signIn}>
-				<i>account_circle</i>
-				Sign in
-			</button>
-		{/if}
-	</nav>
-</header>
 
-<main class="responsive max">
-	<div style="display: contents"><slot /></div>
-</main>
+<Navbar class="border-b-black dark:border-b-white border-b">
+	<NavBrand href="/">
+	  <img src="logo.svg" class="me-3 h-6 sm:h-9 dark:invert" alt="BBCD Logo" />
+	</NavBrand>
+	<NavHamburger />
+	<NavUl {activeUrl}>
+		<NavLi>
+			{#if session}
+			<Button on:click={signOut} class="bg-black dark:bg-white dark:text-black text-xl">Sign out</Button>
+			{:else}
+			<Button on:click={signIn} class="bg-black dark:bg-white dark:text-black text-xl">Sign in</Button>
+			{/if}
+		</NavLi>
+	  <NavLi>
+		<DarkMode {btnClass} />
+	  </NavLi>
+	</NavUl>
+</Navbar>
+
+
+<slot />
+
+<div class="w-full border-t border-black dark:border-white mt-5">
+	<p class="text-center py-2">
+		Made with ❤️ by Kat 🏳️‍⚧️
+	</p>
+</div>

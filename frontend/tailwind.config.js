@@ -24,7 +24,13 @@ const config = {
 					800: '#CC4522',
 					900: '#A5371B'
 				}
+			},
+			spacing: {
+				'17': '17rem',
 			}
+		},
+		fontFamily: {
+			sans: ['BBC Reith Sans', 'Inter', 'sans-serif']
 		}
 	}
 };
