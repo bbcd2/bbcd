@@ -2,34 +2,6 @@
 	import { goto, invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import '../app.css';
-
-	export let data;
-	$: ({ session, supabase } = data);
-
-	onMount(() => {
-		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
-			if (!newSession) {
-				/**
-				 * Queue this as a task so the navigation won't prevent the
-				 * triggering function from completing
-				 */
-				setTimeout(() => {
-					goto('/', { invalidateAll: true });
-				});
-			}
-			if (newSession?.expires_at !== session?.expires_at) {
-				invalidate('supabase:auth');
-			}
-		});
-
-		return () => data.subscription.unsubscribe();
-	});
-	async function signIn() {
-		await supabase.auth.signInWithOAuth({ provider: 'discord' });
-	}
-	async function signOut() {
-		await supabase.auth.signOut();
-	}
 	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, Dropdown, DropdownItem, DropdownDivider, DarkMode, Button, Footer, FooterBrand, FooterCopyright, FooterIcon, FooterLink, FooterLinkGroup } from 'flowbite-svelte';
 	import { ChevronDownOutline } from 'flowbite-svelte-icons'
 	import { page } from '$app/stores';
@@ -46,13 +18,6 @@
 	</NavBrand>
 	<NavHamburger />
 	<NavUl {activeUrl}>
-		<NavLi>
-			{#if session}
-			<Button on:click={signOut} class="bg-black dark:bg-white dark:text-black text-xl">Sign out</Button>
-			{:else}
-			<Button on:click={signIn} class="bg-black dark:bg-white dark:text-black text-xl">Sign in</Button>
-			{/if}
-		</NavLi>
 	  <NavLi>
 		<DarkMode {btnClass} />
 	  </NavLi>
@@ -63,7 +28,7 @@
 <slot />
 
 <div class="w-full border-t border-black dark:border-white mt-5">
-	<p class="text-center py-2">
+	<p class="text-center">
 		Made with ❤️ by Kat 🏳️‍⚧️
 	</p>
 </div>

@@ -1,21 +1,15 @@
 <script lang="ts">
-	import { createClient } from '@supabase/supabase-js';
 	import { onMount } from 'svelte';
+	import { enhance } from '$app/forms';
+
 	import {
 		Label,
 		Input,
 		Select,
 		Button,
-		Toast,
-		Table,
-		TableBody,
-		TableBodyCell,
-		TableBodyRow,
-		TableHead,
-		TableHeadCell
+		Toast
 	} from 'flowbite-svelte';
 	import {
-		AngleRightOutline,
 		ArrowRightOutline,
 		LinkOutline,
 		PaperPlaneOutline
@@ -32,10 +26,6 @@
 		if (error) console.log('error', error.message);
 		return data;
 	};
-	let id: string;
-	onMount(async () => {
-		id = (await supabase.auth.getUser())?.data?.user?.id ?? '';
-	});
 	function statusString(status: number) {
 		switch (status) {
 			case 1:
@@ -159,12 +149,12 @@
 	let startMinute = new Date().toLocaleString('en-GB', {
 		timeZone: 'Europe/London',
 		minute: 'numeric'
-	});
+	}).toString().padStart(2, '0');
 	let channel: number;
 	let length = 0;
 	let lengthUnit = 1;
-	let endHour = 0;
-	let endMinute = 0;
+	let endHour: string;
+	let endMinute: string;
 	let startSeconds = 0;
 	async function submitForm() {
 		const form = document.querySelector('form');
@@ -181,29 +171,50 @@
 		} else if (lengthUnit === 2) {
 			totalMinutes = length * 60;
 		}
-		endHour = parseInt(startHour) + Math.floor(totalMinutes / 60);
-		endMinute = parseInt(startMinute) + (totalMinutes % 60);
-		if (endMinute > 59) {
-			endHour++;
-			endMinute -= 60;
+		let endHourN = parseInt(startHour) + Math.floor(totalMinutes / 60);
+		let endMinuteN = parseInt(startMinute) + (totalMinutes % 60);
+		if (endMinuteN > 59) {
+			endHourN++;
+			endMinuteN -= 60;
 		}
-		endHour = endHour.toString().padStart(2, '0');
-		endMinute = endMinute.toString().padStart(2, '0');
+		// if 
+		endHour = endHourN.toString().padStart(2, '0');
+		endMinute = endMinuteN.toString().padStart(2, '0');
 	}
+	let currentJob: string;
+	/** @type {import('./$types').Actions} */
+	if (form && form.body) {
+		currentJob = form.body;
+	}
+	// if currentjob exists, every 5 seconds check the database for the contents of the status searching by uuid
+	setTimeout(() => {
+		if (currentJob) {
+			const interval = setInterval(async () => {
+				const { data, error } = await supabase.from('recordings').select('*').eq('uuid', currentJob);
+				if (error) {
+					console.error('Error fetching recording status:', error.message);
+					clearInterval(interval);
+				}
+				if (data && data.length > 0) {
+					if (data[0].status === 7) {
+						clearInterval(interval);
+					}
+				}
+			}, 5000);
+		}
+	}, 5000);
 </script>
-
-{#if session}
 	<aside
-		class="border-2 p-4 mx-[22rem] md:mx-[8rem] my-10 border-black dark:border-white lg:grid md:grid lg:grid-cols-3 md:grid-cols-3"
-	>
+		class="border-2 p-4 lg:2-xl:mx-[22rem] md:mx-[8rem] mx-2 my-10 border-black dark:border-white lg:grid md:grid lg:grid-cols-3 md:grid-cols-3">
 		<div class="flex flex-col justify-start items-start">
 			<!-- Left aligned -->
 			<h1 class="text-3xl pb-2 font-bold">From</h1>
 			<div class="flex flex-row">
 				<div class="w-20">
+					<Label for="first_name" class="mb-2 semibold">Day</Label>
 					<Input
 						size="md"
-						min="0"
+						min="1"
 						max="23"
 						type="number"
 						bind:value={startDay}
@@ -211,9 +222,10 @@
 					/>
 				</div>
 				<div class="w-20">
+					<Label for="first_name" class="mb-2 semibold">Month</Label>
 					<Input
 						size="md"
-						min="0"
+						min="1"
 						max="59"
 						type="number"
 						bind:value={startMonth}
@@ -224,6 +236,8 @@
 
 			<div class="flex items-center mt-2">
 				<div class="w-20">
+					<Label for="first_name" class="mb-2 semibold">Hour</Label>
+
 					<Input
 						size="md"
 						min="0"
@@ -234,6 +248,8 @@
 					/>
 				</div>
 				<div class="w-20">
+					<Label for="first_name" class="mb-2 semibold">Minute</Label>
+
 					<Input
 						size="md"
 						min="0"
@@ -287,7 +303,6 @@
 		</div>
 
 		<div class="flex flex-col">
-			<!-- Right aligned -->
 			<h1 class="text-3xl pb-2 self-start font-bold">Length</h1>
 			<div class="flex flex-row">
 				<div class="mt-2 w-20">
@@ -310,18 +325,61 @@
 		</div>
 	</aside>
 	<div class="absolute flex flex-col justify-center items-center w-full -translate-y-[3.8rem]">
-		<Button class="bg-black dark:bg-white dark:text-black font-bold" buttonClass="font-bold">Record</Button>
-		<p class="pb-4">Status: Combining Audio & Video</p>
+		<Button class="bg-black dark:bg-white dark:text-black font-extrabold" buttonClass="font-extrabold" on:click={submitForm}>Record</Button>
+		<p class="pb-4">Status: </p>
 	</div>
-{/if}
-<form method="post">
+	{#if form?.tooLong}
+		<div class="flex justify-center">
+			<Toast
+				dismissable={true}
+				contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+			>
+				<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
+				<div class="ps-4 text-sm font-normal">Your recording is too long. Please try again or contact us to increase your limit.</div>
+			</Toast>
+		</div>
+	{/if}
+	{#if form?.startBeforeEnd}
+		<div class="flex justify-center">
+			<Toast
+				dismissable={true}
+				contentClass="flex space x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+			>
+				<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
+				<div class="ps-4 text-sm font-normal">Your recording must start before it ends.</div>
+			</Toast>
+		</div>
+		{/if}
+	{#if form?.future}
+		<div class="flex justify-center">
+			<Toast
+				dismissable={true}
+				contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+			>
+				<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
+				<div class="ps-4 text-sm font-normal">We cannot record the future.</div>
+			</Toast>
+		</div>
+		{/if}
+	{#if form?.status === 200}
+		<div class="flex justify-center">
+			<Toast
+				dismissable={true}
+				contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+			>
+				<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
+				<div class="ps-4 text-sm font-normal">Your recording has been scheduled.</div>
+			</Toast>
+		</div>
+	{/if}
+
+<form method="post" use:enhance>
 	<input type="hidden" name="startMonth" bind:value={startMonth} required />
 	<input type="hidden" name="startDay" bind:value={startDay} required />
 	<input type="hidden" name="startHour" bind:value={startHour} required />
 	<input type="hidden" name="startMinute" bind:value={startMinute} required />
 	<input type="hidden" name="startSeconds" bind:value={startSeconds} required />
 	<input type="hidden" name="channel" bind:value={channel} required />
-	<input type="hidden" name="user" value={id} required />
 	<input type="hidden" name="length" bind:value={length} required />
 	<input type="hidden" name="lengthUnit" bind:value={lengthUnit} required />
 </form>
@@ -332,16 +390,7 @@
 	<p>Fetching recordings...</p>
 {:then recordings}
 	<div class="flex justify-center">
-		<table class="mx-[22rem] my-2 border-black dark:border-white w-full table-auto">
-			<thead>
-				<tr>
-					<th>Date</th>
-					<th>Time</th>
-					<th>Channel</th>
-					<th>Status</th>
-					<th></th>
-				</tr>
-			</thead>
+		<table class="lg:2-xl:mx-[22rem] md:mx-[8rem] mx-2 my-2 border-black dark:border-white w-full table-auto">
 			<tbody class="divide-y border-2 border-black dark:border-white">
 				{#each recordings ?? [] as recording}
 					<tr
@@ -378,7 +427,7 @@
 							>{statusString(recording.status)}</td
 						>
 						<td class="p-2 border-2 border-black dark:border-white"
-							><a href="/express/download/{recording.uuid}"><LinkOutline /></a></td
+							><a href="https://bbcd.uk.to/video/{recording.uuid}.mp4"><LinkOutline /></a></td
 						>
 					</tr>
 				{/each}
@@ -388,12 +437,14 @@
 {:catch error}
 	<p>Failed to fetch recordings: {error.message}</p>
 {/await}
-<div class="flex justify-center hidden">
+{#if form?.tooLong}
+<div class="flex justify-center">
 	<Toast
 		dismissable={true}
 		contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
 	>
 		<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
-		<div class="ps-4 text-sm font-normal">Message sent successfully.</div>
+		<div class="ps-4 text-sm font-normal">Your recording is too long. Please try again or contact us to increase your limit.</div>
 	</Toast>
 </div>
+{/if}

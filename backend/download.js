@@ -10,8 +10,14 @@ function calculateNumber(timestamp) {
 
 // Function to download segment
 async function downloadSegment(url, filename) {
-  const response = await axios.get(url, { responseType: "arraybuffer" });
-  fs.writeFileSync(filename, response.data);
+  try {
+    const response = await axios.get(url, { responseType: "arraybuffer" });
+    fs.writeFileSync(filename, response.data);
+  } catch (error) {
+    console.error("Error occurred while downloading segment:", error);
+    throw new Error("Error occurred while downloading segment");
+
+  }
 }
 
 // Function to combine audio and video segments
@@ -102,10 +108,9 @@ async function main(startTimestamp, endTimestamp, jobId, client, channel) {
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_parliament/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_alba/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:s4cpbs/",
-    "	https://vs-cmaf-pushb-ntham-gcomm.live.cf.md.bbci.co.uk/x=4/i=urn:bbc:pips:service:bbc_world_news_north_america/",
+    "https://vs-cmaf-pushb-ntham-gcomm-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_world_news_north_america/",
   ];
   const urlPrefix = urlPrefixes[channel];
-  // Download segment initialization files for both audio and video
   const audioInitUrl = `${urlPrefix}a=pa3/al=en-GB/ap=main/b=96000/segment.init`;
   const videoInitUrl = `${urlPrefix}v=pv14/b=5070016/segment.init`;
   // Create a directory to store downloaded segments
@@ -152,13 +157,13 @@ async function main(startTimestamp, endTimestamp, jobId, client, channel) {
     fs.unlinkSync(`temp/${jobId}/audio_${number}.m4s`);
   }
   // Clean  up folder
-  fs.rmdirSync(`temp/${jobId}`, { recursive: true });
+  fs.rmSync(`temp/${jobId}`, { recursive: true });
   // Update status to 6
   await client.from("recordings").update({ status: 6 }).eq("uuid", jobId);
   // Upload the MP4 file to the WebDAV server
-  const webdavUrl = "https://u382991.your-storagebox.de/bbcd";
-  const webdavUsername = "u382991";
-  const webdavPassword = "s2q5mLVJcVZz3jDj";
+  const webdavUrl = process.env.WEBDAV_URL;
+  const webdavUsername = process.env.WEBDAV_USERNAME;
+  const webdavPassword = process.env.WEBDAV_PASSWORD;
   execSync(
     `curl -T ${outputFilename} -u ${webdavUsername}:${webdavPassword} ${webdavUrl}/bbcd/${outputFilename}`
   );

@@ -7,11 +7,18 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const sb = require("@supabase/supabase-js");
 const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
+// get webdav details from .env.local
+require("dotenv").config();
+const webdavUrl = process.env.WEBDAV_URL;
+const webdavUsername = process.env.WEBDAV_USERNAME;
+const webdavPassword = process.env.WEBDAV_PASSWORD;
+// get supabase details
+const supabaseUrl = process.env.PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.PUBLIC_SUPABASE_ANON_KEY;
 
-const client = sb.createClient(
-  "https://hlbdezevgntxspmvfmyv.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsYmRlemV2Z250eHNwbXZmbXl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTQzNTA1ODksImV4cCI6MjAyOTkyNjU4OX0.U1pYhVQLSPUegwEaeBwMcApFYMUKzkrQDYo8lkxBIac"
-);
+const client = sb.createClient(supabaseUrl, supabaseKey);
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -21,39 +28,22 @@ app.post("/downloadVideo", async (req, res) => {
   const startTimestamp = parseInt(req.body.startTimestamp);
   const endTimestamp = parseInt(req.body.endTimestamp);
   channel = parseInt(req.body.channel);
-  if (isNaN(startTimestamp) || isNaN(endTimestamp)) {
-    res.status(400).send("Invalid timestamps");
-    return;
-  }
-  // Generate a unique job ID
   const jobId = uuidv4();
-
-  // Call the downloadVideo function
   main(startTimestamp, endTimestamp, jobId, client, channel)
     .then((outputFilename) => {
-      console.log("Job completed with output filename:", outputFilename);
     })
     .catch((error) => {
-      console.error("Error occurred:", error);
+      console.error("Error occurred in main process:", error);
     });
 
-  // Continue with the rest of your code here
-
-  // Send a response back to the client with the job ID
-  res.send(
-    "Your download is in progress. You can download the file later at this URL: http://localhost:3001/download/" +
-      jobId
-  );
+  res.send(jobId);
 });
 
-// Download route
+/* // Download route
 app.get("/download/:jobId", (req, res) => {
   const jobId = req.params.jobId;
 
   // Download the MP4 file from the WebDAV server
-  const webdavUrl = "https://u382991.your-storagebox.de/bbcd";
-  const webdavUsername = "u382991";
-  const webdavPassword = "s2q5mLVJcVZz3jDj";
   axios({
     method: "get",
     url: `${webdavUrl}/bbcd/${jobId}.mp4`,
@@ -64,13 +54,29 @@ app.get("/download/:jobId", (req, res) => {
     },
   })
     .then((response) => {
-      res.setHeader("Content-Disposition", `attachment; filename=${jobId}.mp4`);
+      res.setHeader("Content-Disposition", `attachment`);
       response.data.pipe(res);
     })
     .catch((error) => {
       console.error("Error downloading file:", error);
       res.status(500).send("Error downloading file");
     });
+}); */
+app.get("/download/:jobId", (req, res) => {
+  const videosDirectory = "Z:\\bbcd\\bbcd";
+  const filename = req.params.jobId + '.mp4';
+  const videoPath = path.join(videosDirectory, filename);
+  // Check if the file exists
+  fs.access(videoPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      // File does not exist
+      res.status(404).send("Video not found");
+      return;
+    }
+    // Create a readable stream from the video file and pipe it to the response
+    const videoStream = fs.createReadStream(videoPath);
+    videoStream.pipe(res);
+  });
 });
 
 app.listen(port, () => {
