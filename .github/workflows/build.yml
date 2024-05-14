@@ -1,0 +1,53 @@
+name: Build and Upload Frontend
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Package frontend
+        run: |
+          cd frontend
+          .\build.bat
+
+      - name: Upload frontend build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: output/frontend.zip
+
+      - name: Package backend
+        run: |
+          cd backend
+          .\build.bat
+
+      - name: Upload backend build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-build
+          path: output/backend.zip
+          
