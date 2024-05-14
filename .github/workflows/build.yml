@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: frontend-build
-          path: output/frontend.zip
+          path: output/frontend
 
       - name: Package backend
         run: |
@@ -52,5 +52,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: backend-build
-          path: output/backend.zip
-          
+          path: output/backend
