@@ -1,0 +1,33 @@
+  name: Deploy Frontend
+  on:
+    release:
+      types: [published]
+  jobs:
+    build:
+      runs-on: macos-latest
+      steps:
+        - name: Connect Tailscale
+          uses: tailscale/github-action@v2
+          with:
+            authkey: ${{SECRETS.TS_AUTHKEY}}
+        - name: Deploy to vell
+          uses: garygrossgarten/github-action-ssh@0.7.0
+          with:
+            command: pm2 stop all && cd backend && rm -rf * && wget https://github.com/kattschan/bbcd/releases/latest/download/backend.zip && unzip backend.zip && rm backend.zip && cd .. && pm2 start all
+            host: 100.64.1.5
+            username: server
+            password: ${{ secrets.VELL_PASSWORD }}
+        - name: Deploy to 260
+          uses: garygrossgarten/github-action-ssh@0.7.0
+          with:     
+            command: pm2 stop all && cd backend && rm -rf * && wget https://github.com/kattschan/bbcd/releases/latest/download/backend.zip && unzip backend.zip && rm backend.zip && cd .. && pm2 start all
+            host: 100.64.1.3
+            username: server
+            password: ${{ secrets.HP_PASSWORD }}
+        - name: Deploy to Main Server
+          uses: garygrossgarten/github-action-ssh@0.7.0
+          with:     
+            command: pm2 stop all && cd backend && rm -rf * && wget https://github.com/kattschan/bbcd/releases/latest/download/backend.zip && unzip backend.zip && rm backend.zip && cd .. && pm2 start all
+            host: bbcd.uk.to
+            username: root
+            password: ${{ secrets.SERVER_PASSWORD }}
