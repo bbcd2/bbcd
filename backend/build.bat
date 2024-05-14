@@ -5,4 +5,3 @@ mkdir ..\output\backend
 copy package.json backend
 copy download.js backend
 copy index.js backend
-copy .env backend
