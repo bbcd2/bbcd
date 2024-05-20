@@ -326,7 +326,7 @@
 	</aside>
 	<div class="absolute flex flex-col justify-center items-center w-full -translate-y-[3.8rem]">
 		<Button class="bg-black dark:bg-white dark:text-black font-extrabold" buttonClass="font-extrabold" on:click={submitForm}>Record</Button>
-		<p class="pb-4">Status: </p>
+		<p class="pb-4">Recordings: </p>
 	</div>
 	{#if form?.tooLong}
 		<div class="flex justify-center">
