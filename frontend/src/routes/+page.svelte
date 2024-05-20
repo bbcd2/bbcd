@@ -218,7 +218,7 @@
 						max="23"
 						type="number"
 						bind:value={startDay}
-						class="rounded-r-none font-semibold"
+						class="rounded-r-none font-semibold bg-white border-black dark:bg-black dark:border-white border-r-0"
 					/>
 				</div>
 				<div class="w-20">
@@ -229,7 +229,7 @@
 						max="59"
 						type="number"
 						bind:value={startMonth}
-						class="rounded-l-none font-semibold"
+						class="rounded-l-none font-semibold bg-white border-black dark:bg-black dark:border-white"
 					/>
 				</div>
 			</div>
@@ -244,7 +244,7 @@
 						max="23"
 						type="number"
 						bind:value={startHour}
-						class="rounded-r-none font-semibold"
+						class="rounded-r-none font-semibold bg-white border-black dark:bg-black dark:border-white border-r-0"
 					/>
 				</div>
 				<div class="w-20">
@@ -256,13 +256,13 @@
 						max="59"
 						type="number"
 						bind:value={startMinute}
-						class="rounded-l-none font-semibold"
+						class="rounded-l-none font-semibold bg-white border-black dark:bg-black dark:border-white"
 					/>
 				</div>
 			</div>
 			<Select
 				size="md"
-				class="w-full mt-2 font-semibold"
+				class="w-full mt-2 font-semibold bg-white border-black dark:bg-black dark:border-white"
 				items={[
 					{ value: '0', name: 'BBC ONE HD' },
 					{ value: '1', name: 'BBC ONE WALES HD' },
@@ -306,12 +306,12 @@
 			<h1 class="text-3xl pb-2 self-start font-bold">Length</h1>
 			<div class="flex flex-row">
 				<div class="mt-2 w-20">
-					<Input size="md" type="number" bind:value={length} min="0" class="rounded-r-none font-semibold" />
+					<Input size="md" type="number" bind:value={length} min="0" class="rounded-r-none font-semibold bg-white border-black dark:bg-black dark:border-white border-r-0" />
 				</div>
 				<div class="mt-2 w-100">
 					<Select
 						size="md"
-						class="font-semibold w-full rounded-l-none"
+						class="font-semibold w-full rounded-l-none bg-white border-black dark:bg-black dark:border-white"
 						items={[
 							{ value: 0, name: 'Seconds' },
 							{ value: 1, name: 'Minutes' },
