@@ -387,7 +387,7 @@
 <div class="space" />
 
 {#await getRecordings()}
-	<p class="text-center">Fetching recordings...</p>
+	<p class="text-center"><i>Fetching recordings...</i></p>
 {:then recordings}
 	<div class="flex justify-center">
 		<table class="lg:2-xl:mx-[22rem] md:mx-[8rem] mx-2 my-2 border-black dark:border-white w-full table-auto">
