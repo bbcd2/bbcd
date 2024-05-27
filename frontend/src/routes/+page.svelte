@@ -1,19 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { enhance } from '$app/forms';
-
-	import {
-		Label,
-		Input,
-		Select,
-		Button,
-		Toast
-	} from 'flowbite-svelte';
-	import {
-		ArrowRightOutline,
-		LinkOutline,
-		PaperPlaneOutline
-	} from 'flowbite-svelte-icons';
+	import { page } from '$app/stores';
+	import { Label, Input, Select, Button, Toast, Banner } from 'flowbite-svelte';
+	import { ArrowRightOutline, LinkOutline, PaperPlaneOutline, BullhornSolid } from 'flowbite-svelte-icons';
 	export let data;
 	$: ({ session, supabase } = data);
 	// Get the last 15 records from the recordings table
@@ -49,67 +39,65 @@
 	function channelString(channel: number) {
 		switch (channel) {
 			case 0:
-				return 'BBC ONE HD';
-			case 1:
-				return 'BBC ONE WALES HD';
-			case 2:
-				return 'BBC ONE SCOTLAND HD';
-			case 3:
-				return 'BBC ONE NORTHERN IRELAND HD';
-			case 4:
-				return 'BBC ONE CHANNEL ISLANDS HD';
-			case 5:
-				return 'BBC ONE EAST HD';
-			case 6:
-				return 'BBC ONE EAST MIDLANDS HD';
-			case 7:
-				return 'BBC ONE EAST YORKSHIRE & LINCOLNSHIRE HD';
-			case 8:
-				return 'BBC ONE LONDON HD';
-			case 9:
-				return 'BBC ONE NORTH EAST HD';
-			case 10:
-				return 'BBC ONE NORTH WEST HD';
-			case 11:
-				return 'BBC ONE SOUTH HD';
-			case 12:
-				return 'BBC ONE SOUTH EAST HD';
-			case 13:
-				return 'BBC ONE SOUTH WEST HD';
-			case 14:
-				return 'BBC ONE WEST HD';
-			case 15:
-				return 'BBC ONE WEST MIDLANDS HD';
-			case 16:
-				return 'BBC ONE YORKSHIRE HD';
-			case 17:
-				return 'BBC TWO HD';
-			case 18:
-				return 'BBC TWO NORTHERN IRELAND HD';
-			case 19:
-				return 'BBC TWO WALES DIGITAL';
-			case 20:
-				return 'BBC THREE HD';
-			case 21:
-				return 'BBC FOUR HD';
-			case 22:
-				return 'CBBC HD';
-			case 23:
-				return 'CBEEBIES HD';
-			case 24:
-				return 'BBC SCOTLAND HD';
-			case 25:
 				return 'BBC NEWS CHANNEL HD';
-			case 26:
-				return 'BBC PARLIAMENT';
-			case 27:
-				return 'BBC ALBA';
-			case 28:
-				return 'S4C';
-			case 29:
+			case 1:
 				return 'BBC WORLD NEWS AMERICA HD';
-			default:
-				return 'Unknown';
+			case 2:
+				return 'BBC ONE HD';
+			case 3:
+				return 'BBC ONE WALES HD';
+			case 4:
+				return 'BBC ONE SCOTLAND HD';
+			case 5:
+				return 'BBC ONE NORTHERN IRELAND HD';
+			case 6:
+				return 'BBC ONE CHANNEL ISLANDS HD';
+			case 7:
+				return 'BBC ONE EAST HD';
+			case 8:
+				return 'BBC ONE EAST MIDLANDS HD';
+			case 9:
+				return 'BBC ONE EAST YORKSHIRE & LINCONSHIRE HD';
+			case 10:
+				return 'BBC ONE LONDON HD';
+			case 11:
+				return 'BBC ONE NORTH EAST HD';
+			case 12:
+				return 'BBC ONE NORTH WEST HD';
+			case 13:
+				return 'BBC ONE SOUTH HD';
+			case 14:
+				return 'BBC ONE SOUTH EAST HD';
+			case 15:
+				return 'BBC ONE SOUTH WEST HD';
+			case 16:
+				return 'BBC ONE WEST HD';
+			case 17:
+				return 'BBC ONE WEST MIDLANDS HD';
+			case 18:
+				return 'BBC ONE YOKRSHIRE HD';
+			case 19:
+				return 'BBC TWO HD';
+			case 20:
+				return 'BBC TWO NORTHERN IRELAND HD';
+			case 21:
+				return 'BBC TWO WALES DIGITAL';
+			case 22:
+				return 'BBC THREE HD';
+			case 23:
+				return 'BBC FOUR HD';
+			case 24:
+				return 'CBBC HD';
+			case 25:
+				return 'CBEEBIES HD';
+			case 26:
+				return 'BBC SCOTLAND HD';
+			case 27:
+				return 'BBC PARLIAMENT';
+			case 28:
+				return 'BBC ALBA';
+			case 29:
+				return 'S4C';
 		}
 	}
 	export let form;
@@ -146,10 +134,13 @@
 		timeZone: 'Europe/London',
 		hour: 'numeric'
 	});
-	let startMinute = new Date().toLocaleString('en-GB', {
-		timeZone: 'Europe/London',
-		minute: 'numeric'
-	}).toString().padStart(2, '0');
+	let startMinute = new Date()
+		.toLocaleString('en-GB', {
+			timeZone: 'Europe/London',
+			minute: 'numeric'
+		})
+		.toString()
+		.padStart(2, '0');
 	let channel: number;
 	let length = 0;
 	let lengthUnit = 1;
@@ -177,7 +168,7 @@
 			endHourN++;
 			endMinuteN -= 60;
 		}
-		// if 
+		// if
 		endHour = endHourN.toString().padStart(2, '0');
 		endMinute = endMinuteN.toString().padStart(2, '0');
 	}
@@ -190,7 +181,10 @@
 	setTimeout(() => {
 		if (currentJob) {
 			const interval = setInterval(async () => {
-				const { data, error } = await supabase.from('recordings').select('*').eq('uuid', currentJob);
+				const { data, error } = await supabase
+					.from('recordings')
+					.select('*')
+					.eq('uuid', currentJob);
 				if (error) {
 					console.error('Error fetching recording status:', error.message);
 					clearInterval(interval);
@@ -232,11 +226,24 @@
 						class="rounded-l-none font-semibold bg-white border-black dark:bg-black dark:border-white"
 					/>
 				</div>
-			</div>
 
-			<div class="flex items-center mt-2">
-				<div class="w-20">
-					<Label for="first_name" class="mb-2 semibold">Hour</Label>
+			</div>
+			<div class="w-20">
+				<Label for="first_name" class="mb-2 semibold">Month</Label>
+				<Input
+					size="md"
+					min="1"
+					max="59"
+					type="number"
+					bind:value={startMonth}
+					class="rounded-l-none font-semibold"
+				/>
+			</div>
+		</div>
+
+		<div class="flex items-center mt-2">
+			<div class="w-20">
+				<Label class="mb-2 semibold">Hour</Label>
 
 					<Input
 						size="md"
@@ -320,58 +327,101 @@
 						bind:value={lengthUnit}
 					/>
 				</div>
+
 			</div>
-			<h6 class="font-semibold text-md pt-4 self-start">Ends at {endHour}:{endMinute}</h6>
 		</div>
+
 	</aside>
 	<div class="absolute flex flex-col justify-center items-center w-full -translate-y-[3.8rem]">
 		<Button class="bg-black dark:bg-white dark:text-black font-extrabold" buttonClass="font-extrabold" on:click={submitForm}>Record</Button>
-		<p class="pb-4">Recordings: </p>
+		<p class="pb-4">Status: </p>
 	</div>
-	{#if form?.tooLong}
-		<div class="flex justify-center">
-			<Toast
-				dismissable={true}
-				contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
-			>
-				<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
-				<div class="ps-4 text-sm font-normal">Your recording is too long. Please try again or contact us to increase your limit.</div>
-			</Toast>
+	<div class="flex flex-col justify-center items-center py-2">
+		<ArrowRightOutline />
+	</div>
+
+	<div class="flex flex-col">
+		<h1 class="text-3xl pb-2 self-start font-bold">Length</h1>
+		<div class="flex flex-row">
+			<div class="mt-2 w-20">
+				<Input
+					size="md"
+					type="number"
+					bind:value={length}
+					min="0"
+					class="rounded-r-none font-semibold"
+				/>
+			</div>
+			<div class="mt-2 w-100">
+				<Select
+					size="md"
+					class="font-semibold w-full rounded-l-none"
+					items={[
+						{ value: 0, name: 'Seconds' },
+						{ value: 1, name: 'Minutes' },
+						{ value: 2, name: 'Hours' }
+					]}
+					bind:value={lengthUnit}
+				/>
+			</div>
 		</div>
-	{/if}
-	{#if form?.startBeforeEnd}
-		<div class="flex justify-center">
-			<Toast
-				dismissable={true}
-				contentClass="flex space x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
-			>
-				<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
-				<div class="ps-4 text-sm font-normal">Your recording must start before it ends.</div>
-			</Toast>
-		</div>
-		{/if}
-	{#if form?.future}
-		<div class="flex justify-center">
-			<Toast
-				dismissable={true}
-				contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
-			>
-				<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
-				<div class="ps-4 text-sm font-normal">We cannot record the future.</div>
-			</Toast>
-		</div>
-		{/if}
-	{#if form?.status === 200}
-		<div class="flex justify-center">
-			<Toast
-				dismissable={true}
-				contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
-			>
-				<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
-				<div class="ps-4 text-sm font-normal">Your recording has been scheduled.</div>
-			</Toast>
-		</div>
-	{/if}
+		<h6 class="font-semibold text-md pt-4 self-start">Ends at {endHour}:{endMinute}</h6>
+	</div>
+</aside>
+<div class="absolute flex flex-col justify-center items-center w-full -translate-y-[3.8rem]">
+	<Button
+		class="bg-black dark:bg-white dark:text-black font-extrabold"
+		buttonClass="font-extrabold"
+		on:click={submitForm}>Record</Button
+	>
+	<p class="pb-4">Status:</p>
+</div>
+{#if form?.tooLong}
+	<div class="flex justify-center">
+		<Toast
+			dismissable={true}
+			contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+		>
+			<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
+			<div class="ps-4 text-sm font-normal">
+				Your recording is too long. Please try again or contact us to increase your limit.
+			</div>
+		</Toast>
+	</div>
+{/if}
+{#if form?.startBeforeEnd}
+	<div class="flex justify-center">
+		<Toast
+			dismissable={true}
+			contentClass="flex space x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+		>
+			<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
+			<div class="ps-4 text-sm font-normal">Your recording must start before it ends.</div>
+		</Toast>
+	</div>
+{/if}
+{#if form?.future}
+	<div class="flex justify-center">
+		<Toast
+			dismissable={true}
+			contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+		>
+			<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
+			<div class="ps-4 text-sm font-normal">We cannot record the future.</div>
+		</Toast>
+	</div>
+{/if}
+{#if form?.status === 200}
+	<div class="flex justify-center">
+		<Toast
+			dismissable={true}
+			contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+		>
+			<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
+			<div class="ps-4 text-sm font-normal">Your recording has been scheduled.</div>
+		</Toast>
+	</div>
+{/if}
 
 <form method="post" use:enhance>
 	<input type="hidden" name="startMonth" bind:value={startMonth} required />
@@ -390,7 +440,9 @@
 	<p class="text-center"><i>Fetching recordings...</i></p>
 {:then recordings}
 	<div class="flex justify-center">
-		<table class="lg:2-xl:mx-[22rem] md:mx-[8rem] mx-2 my-2 border-black dark:border-white w-full table-auto">
+		<table
+			class="lg:2-xl:mx-[22rem] md:mx-[8rem] mx-2 my-2 border-black dark:border-white w-full table-auto"
+		>
 			<tbody class="divide-y border-2 border-black dark:border-white">
 				{#each recordings ?? [] as recording}
 					<tr
@@ -403,10 +455,10 @@
 									startDate.getMonth() === endDate.getMonth() &&
 									startDate.getFullYear() === endDate.getFullYear();
 								return sameDay
-									? startDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit' })
-									: startDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit' }) +
+									? startDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit', timeZone: 'Europe/London' })
+									: startDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit', timeZone: 'Europe/London' }) +
 											' - ' +
-											endDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit' });
+											endDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit', timeZone: 'Europe/London' });
 							})()}
 						</td>
 						<td class="p-2 border-2 border-black dark:border-white">
@@ -414,9 +466,17 @@
 								const startDate = new Date(recording.rec_start * 1000);
 								const endDate = new Date(recording.rec_end * 1000);
 								return (
-									startDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) +
+									startDate.toLocaleTimeString('en-GB', {
+										hour: '2-digit',
+										minute: '2-digit',
+										timeZone: 'Europe/London'
+									}) +
 									' - ' +
-									endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+									endDate.toLocaleTimeString('en-GB', {
+										hour: '2-digit',
+										minute: '2-digit',
+										timeZone: 'Europe/London'
+									})
 								);
 							})()}
 						</td>
@@ -438,13 +498,15 @@
 	<p>Failed to fetch recordings: {error.message}</p>
 {/await}
 {#if form?.tooLong}
-<div class="flex justify-center">
-	<Toast
-		dismissable={true}
-		contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
-	>
-		<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
-		<div class="ps-4 text-sm font-normal">Your recording is too long. Please try again or contact us to increase your limit.</div>
-	</Toast>
-</div>
+	<div class="flex justify-center">
+		<Toast
+			dismissable={true}
+			contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+		>
+			<PaperPlaneOutline class="w-5 h-5 text-primary-600 dark:text-primary-500 rotate-45" />
+			<div class="ps-4 text-sm font-normal">
+				Your recording is too long. Please try again or contact us to increase your limit.
+			</div>
+		</Toast>
+	</div>
 {/if}

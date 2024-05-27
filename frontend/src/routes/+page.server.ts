@@ -46,6 +46,17 @@ export const actions: Actions = {
 				console.log('no hours');
 				return fail(400, { tooLong: true });
 		}
+		if (channel === 1) {
+			console.log('contacting vell');
+			// Contact 100.64.1.2:3001 via AXIOS
+			console.log(`body: ${startTimestamp}, ${endTimestamp}, ${channel}`)
+			const response = await axios.post('http://100.64.1.5:3001/downloadVideo', {
+				startTimestamp: startTimestamp,
+				endTimestamp: endTimestamp,
+				channel: channel
+			});
+			return { status: 200, body: await response.data };
+		}
 		// Get the time of day
 		const now = new Date();
 		const hours = now.getHours();
@@ -70,7 +81,7 @@ export const actions: Actions = {
 			console.log('contacting hp');
 			console.log(`body: ${startTimestamp}, ${endTimestamp}, ${channel}`)
 			// Contact 100.64.1.3:3001 via AXIOS
-			const response = await axios.post('http://100.64.1.3:3001/downloadVideo', {
+			const response = await axios.post('http://127.0.0.1:3001/downloadVideo', {
 				startTimestamp: startTimestamp,
 				endTimestamp: endTimestamp,
 				channel: channel
