@@ -11,28 +11,25 @@
 	let btnClass = 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-xl p-2 center-content';
 </script>
 
+<div class="flex flex-col min-h-screen">
+	<Navbar class="border-b-black dark:border-b-white border-b dark:bg-black">
+		<NavBrand href="/">
+		  <img src="logo.svg" class="me-3 h-6 sm:h-9 dark:invert" alt="BBCD Logo" />
+		</NavBrand>
+		<NavHamburger />
+		<NavUl {activeUrl}>
+		  <NavLi>
+			<DarkMode {btnClass} />
+		  </NavLi>
+		</NavUl>
+	</Navbar>
+	<main class="flex-1">
+		<slot />
+	</main>
+	<div class="w-full border-t border-black dark:border-white mt-5">
+		<p class="text-center m-5">
+			Made with ❤️ by Kat 🏳️‍⚧️
+		</p>
+	</div>
 
-<Navbar class="border-b-black dark:border-b-white border-b">
-	<NavBrand href="/">
-	  <img src="/logo.svg" class="me-3 h-6 sm:h-9 dark:invert" alt="BBCD Logo" />
-	</NavBrand>
-	<NavHamburger />
-	<NavUl {activeUrl}>
-		<NavLi href="/auth/signin" {activeUrl}>
-			<Button class="bg-black">Sign in</Button>
-		</NavLi>
-	  <NavLi>
-		<DarkMode {btnClass} />
-	  </NavLi>
-	</NavUl>
-</Navbar>
-
-
-<slot />
-
-
-<div class="w-full border-t border-black dark:border-white mt-5">
-	<p class="text-center">
-		Made with ❤️ by Kat 🏳️‍⚧️
-	</p>
 </div>

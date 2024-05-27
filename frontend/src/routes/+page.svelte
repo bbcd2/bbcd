@@ -198,24 +198,35 @@
 		}
 	}, 5000);
 </script>
+	<aside
+		class="border-2 p-4 lg:2-xl:mx-[22rem] md:mx-[8rem] mx-2 my-10 border-black dark:border-white lg:grid md:grid lg:grid-cols-3 md:grid-cols-3">
+		<div class="flex flex-col justify-start items-start">
+			<!-- Left aligned -->
+			<h1 class="text-3xl pb-2 font-bold">From</h1>
+			<div class="flex flex-row">
+				<div class="w-20">
+					<Label for="first_name" class="mb-2 semibold">Day</Label>
+					<Input
+						size="md"
+						min="1"
+						max="23"
+						type="number"
+						bind:value={startDay}
+						class="rounded-r-none font-semibold bg-white border-black dark:bg-black dark:border-white border-r-0"
+					/>
+				</div>
+				<div class="w-20">
+					<Label for="first_name" class="mb-2 semibold">Month</Label>
+					<Input
+						size="md"
+						min="1"
+						max="59"
+						type="number"
+						bind:value={startMonth}
+						class="rounded-l-none font-semibold bg-white border-black dark:bg-black dark:border-white"
+					/>
+				</div>
 
-<aside
-	class="border-2 p-4 lg:2-xl:mx-[22rem] md:mx-[8rem] mx-2 my-10 border-black dark:border-white lg:grid md:grid lg:grid-cols-3 md:grid-cols-3"
->
-	<div class="flex flex-col justify-start items-start">
-		<!-- Left aligned -->
-		<h1 class="text-3xl pb-2 font-bold">From</h1>
-		<div class="flex flex-row">
-			<div class="w-20">
-				<Label for="first_name" class="mb-2 semibold">Day</Label>
-				<Input
-					size="md"
-					min="1"
-					max="23"
-					type="number"
-					bind:value={startDay}
-					class="rounded-r-none font-semibold"
-				/>
 			</div>
 			<div class="w-20">
 				<Label for="first_name" class="mb-2 semibold">Month</Label>
@@ -234,78 +245,96 @@
 			<div class="w-20">
 				<Label class="mb-2 semibold">Hour</Label>
 
-				<Input
-					size="md"
-					min="0"
-					max="23"
-					type="number"
-					bind:value={startHour}
-					class="rounded-r-none font-semibold"
-				/>
-			</div>
-			<div class="w-20">
-				<Label class="mb-2 semibold">Minute</Label>
+					<Input
+						size="md"
+						min="0"
+						max="23"
+						type="number"
+						bind:value={startHour}
+						class="rounded-r-none font-semibold bg-white border-black dark:bg-black dark:border-white border-r-0"
+					/>
+				</div>
+				<div class="w-20">
+					<Label for="first_name" class="mb-2 semibold">Minute</Label>
 
-				<Input
-					size="md"
-					min="0"
-					max="59"
-					type="number"
-					bind:value={startMinute}
-					class="rounded-l-none rounded-r-none font-semibold"
-				/>
+					<Input
+						size="md"
+						min="0"
+						max="59"
+						type="number"
+						bind:value={startMinute}
+						class="rounded-l-none font-semibold bg-white border-black dark:bg-black dark:border-white"
+					/>
+				</div>
 			</div>
-			<div class="w-20">
-				<Label class="mb-2 semibold">Seconds</Label>
+			<Select
+				size="md"
+				class="w-full mt-2 font-semibold bg-white border-black dark:bg-black dark:border-white"
+				items={[
+					{ value: '0', name: 'BBC ONE HD' },
+					{ value: '1', name: 'BBC ONE WALES HD' },
+					{ value: '2', name: 'BBC ONE SCOTLAND HD' },
+					{ value: '3', name: 'BBC ONE NORTHERN IRELAND HD' },
+					{ value: '4', name: 'BBC ONE CHANNEL ISLANDS HD' },
+					{ value: '5', name: 'BBC ONE EAST HD' },
+					{ value: '6', name: 'BBC ONE EAST MIDLANDS HD' },
+					{ value: '7', name: 'BBC ONE EAST YORKSHIRE & LINCOLNSHIRE HD' },
+					{ value: '8', name: 'BBC ONE LONDON HD' },
+					{ value: '9', name: 'BBC ONE NORTH EAST HD' },
+					{ value: '10', name: 'BBC ONE NORTH WEST HD' },
+					{ value: '11', name: 'BBC ONE SOUTH HD' },
+					{ value: '12', name: 'BBC ONE SOUTH EAST HD' },
+					{ value: '13', name: 'BBC ONE SOUTH WEST HD' },
+					{ value: '14', name: 'BBC ONE WEST HD' },
+					{ value: '15', name: 'BBC ONE WEST MIDLANDS HD' },
+					{ value: '16', name: 'BBC ONE YORKSHIRE HD' },
+					{ value: '17', name: 'BBC TWO HD' },
+					{ value: '18', name: 'BBC TWO NORTHERN IRELAND HD' },
+					{ value: '19', name: 'BBC TWO WALES DIGITAL' },
+					{ value: '20', name: 'BBC THREE HD' },
+					{ value: '21', name: 'BBC FOUR HD' },
+					{ value: '22', name: 'CBBC HD' },
+					{ value: '23', name: 'CBEEBIES HD' },
+					{ value: '24', name: 'BBC SCOTLAND HD' },
+					{ value: '25', name: 'BBC NEWS CHANNEL HD' },
+					{ value: '26', name: 'BBC PARLIAMENT' },
+					{ value: '27', name: 'BBC ALBA' },
+					{ value: '28', name: 'S4C' }
+				]}
+				bind:value={channel}
+				placeholder="Select channel..."
+			/>
+		</div>
+		<div class="flex flex-col justify-center items-center py-2">
+			<ArrowRightOutline />
+		</div>
 
-				<Input
-					size="md"
-					min="0"
-					max="59"
-					type="number"
-					bind:value={startSeconds}
-					class="rounded-l-none font-semibold"
-				/>
+		<div class="flex flex-col">
+			<h1 class="text-3xl pb-2 self-start font-bold">Length</h1>
+			<div class="flex flex-row">
+				<div class="mt-2 w-20">
+					<Input size="md" type="number" bind:value={length} min="0" class="rounded-r-none font-semibold bg-white border-black dark:bg-black dark:border-white border-r-0" />
+				</div>
+				<div class="mt-2 w-100">
+					<Select
+						size="md"
+						class="font-semibold w-full rounded-l-none bg-white border-black dark:bg-black dark:border-white"
+						items={[
+							{ value: 0, name: 'Seconds' },
+							{ value: 1, name: 'Minutes' },
+							{ value: 2, name: 'Hours' }
+						]}
+						bind:value={lengthUnit}
+					/>
+				</div>
+
 			</div>
 		</div>
-		<Select
-			size="md"
-			class="w-full mt-2 font-semibold"
-			items={[
-				{ value: '0', name: 'BBC NEWS CHANNEL HD' },
-				{ value: '1', name: 'BBC WORLD NEWS AMERICA HD' },
-				{ value: '2', name: 'BBC ONE HD' },
-				{ value: '3', name: 'BBC ONE WALES HD' },
-				{ value: '4', name: 'BBC ONE SCOTLAND HD' },
-				{ value: '5', name: 'BBC ONE NORTHERN IRELAND HD' },
-				{ value: '6', name: 'BBC ONE CHANNEL ISLANDS HD' },
-				{ value: '7', name: 'BBC ONE EAST HD' },
-				{ value: '8', name: 'BBC ONE EAST MIDLANDS HD' },
-				{ value: '9', name: 'BBC ONE EAST YORKSHIRE & LINCONSHIRE HD' },
-				{ value: '10', name: 'BBC ONE LONDON HD' },
-				{ value: '11', name: 'BBC ONE NORTH EAST HD' },
-				{ value: '12', name: 'BBC ONE NORTH WEST HD' },
-				{ value: '13', name: 'BBC ONE SOUTH HD' },
-				{ value: '14', name: 'BBC ONE SOUTH EAST HD' },
-				{ value: '15', name: 'BBC ONE SOUTH WEST HD' },
-				{ value: '16', name: 'BBC ONE WEST HD' },
-				{ value: '17', name: 'BBC ONE WEST MIDLANDS HD' },
-				{ value: '18', name: 'BBC ONE YOKRSHIRE HD' },
-				{ value: '19', name: 'BBC TWO HD' },
-				{ value: '20', name: 'BBC TWO NORTHERN IRELAND HD' },
-				{ value: '21', name: 'BBC TWO WALES DIGITAL' },
-				{ value: '22', name: 'BBC THREE HD' },
-				{ value: '23', name: 'BBC FOUR HD' },
-				{ value: '24', name: 'CBBC HD' },
-				{ value: '25', name: 'CBEEBIES HD' },
-				{ value: '26', name: 'BBC SCOTLAND HD' },
-				{ value: '27', name: 'BBC PARLIAMENT' },
-				{ value: '28', name: 'BBC ALBA' },
-				{ value: '29', name: 'S4C' }
-			]}
-			bind:value={channel}
-			placeholder="Select channel..."
-		/>
+
+	</aside>
+	<div class="absolute flex flex-col justify-center items-center w-full -translate-y-[3.8rem]">
+		<Button class="bg-black dark:bg-white dark:text-black font-extrabold" buttonClass="font-extrabold" on:click={submitForm}>Record</Button>
+		<p class="pb-4">Status: </p>
 	</div>
 	<div class="flex flex-col justify-center items-center py-2">
 		<ArrowRightOutline />
@@ -408,7 +437,7 @@
 <div class="space" />
 
 {#await getRecordings()}
-	<p>Fetching recordings...</p>
+	<p class="text-center"><i>Fetching recordings...</i></p>
 {:then recordings}
 	<div class="flex justify-center">
 		<table
