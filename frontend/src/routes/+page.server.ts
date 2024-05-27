@@ -81,7 +81,7 @@ export const actions: Actions = {
 			console.log('contacting hp');
 			console.log(`body: ${startTimestamp}, ${endTimestamp}, ${channel}`)
 			// Contact 100.64.1.3:3001 via AXIOS
-			const response = await axios.post('http://127.0.0.1:3001/downloadVideo', {
+			const response = await axios.post('http://100.64.1.3:3001/downloadVideo', {
 				startTimestamp: startTimestamp,
 				endTimestamp: endTimestamp,
 				channel: channel
