@@ -214,7 +214,7 @@
 					max="23"
 					type="number"
 					bind:value={startDay}
-					class="rounded-r-none font-semibold"
+					class="rounded-r-none bg-white border-black dark:bg-black dark:border-white"
 				/>
 			</div>
 			<div class="w-20">
@@ -225,7 +225,7 @@
 					max="59"
 					type="number"
 					bind:value={startMonth}
-					class="rounded-l-none font-semibold"
+					class="rounded-l-none bg-white border-black dark:bg-black dark:border-white"
 				/>
 			</div>
 		</div>
@@ -240,7 +240,7 @@
 					max="23"
 					type="number"
 					bind:value={startHour}
-					class="rounded-r-none font-semibold"
+					class="rounded-r-none bg-white border-black dark:bg-black dark:border-white"
 				/>
 			</div>
 			<div class="w-20">
@@ -252,7 +252,7 @@
 					max="59"
 					type="number"
 					bind:value={startMinute}
-					class="rounded-l-none rounded-r-none font-semibold"
+					class="rounded-l-none rounded-r-none bg-white border-black dark:bg-black dark:border-white"
 				/>
 			</div>
 			<div class="w-20">
@@ -264,13 +264,13 @@
 					max="59"
 					type="number"
 					bind:value={startSeconds}
-					class="rounded-l-none font-semibold"
+					class="rounded-l-none bg-white border-black dark:bg-black dark:border-white"
 				/>
 			</div>
 		</div>
 		<Select
 			size="md"
-			class="w-full mt-2 font-semibold"
+			class="w-full mt-2 bg-white border-black dark:bg-black dark:border-white"
 			items={[
 				{ value: '0', name: 'BBC NEWS CHANNEL HD' },
 				{ value: '1', name: 'BBC WORLD NEWS AMERICA HD' },
@@ -320,7 +320,7 @@
 					type="number"
 					bind:value={length}
 					min="0"
-					class="rounded-r-none font-semibold"
+					class="rounded-r-none bg-white border-black dark:bg-black dark:border-white"
 				/>
 			</div>
 			<div class="mt-2 w-100">
@@ -408,7 +408,7 @@
 <div class="space" />
 
 {#await getRecordings()}
-	<p>Fetching recordings...</p>
+	<p class="text-center italic">Fetching recordings...</p>
 {:then recordings}
 	<div class="flex justify-center">
 		<table
