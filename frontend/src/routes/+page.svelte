@@ -326,7 +326,7 @@
 			<div class="mt-2 w-100">
 				<Select
 					size="md"
-					class="font-semibold w-full rounded-l-none"
+					class="font-semibold w-full rounded-l-none bg-white border-black dark:bg-black dark:border-white"
 					items={[
 						{ value: 0, name: 'Seconds' },
 						{ value: 1, name: 'Minutes' },
