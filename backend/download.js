@@ -2,6 +2,7 @@ const axios = require("axios");
 const fs = require("fs");
 const moment = require("moment");
 const { execSync } = require("child_process");
+const { start } = require("repl");
 const prompt = require("prompt-sync")();
 // Function to calculate $Number$
 function calculateNumber(timestamp) {
@@ -44,7 +45,7 @@ function combineSegments(
   execSync(`ffmpeg -i "${audioFiles}" -c copy ${audioFullFilename}`);
 
   execSync(
-    `ffmpeg -i ${videoFullFilename} -i ${audioFullFilename} -c copy ${outputFilename}`
+    `ffmpeg -i ${videoFullFilename} -i ${audioFullFilename} -c:v libx264 -c:a copy ${outputFilename}`
   );
   fs.unlinkSync(videoFullFilename);
   fs.unlinkSync(audioFullFilename);
@@ -65,13 +66,13 @@ async function main(startTimestamp, endTimestamp, jobId, client, channel) {
       channel: channel,
     },
   ]);
-  // Prompt the user for start and end UNIX timestamps
+  // Add 38 seconds to start and end timestamps to account for my bad code
+  startTimestamp += 38;
+  endTimestamp += 38;
+  console.log(startTimestamp, endTimestamp, jobId, channel);
   startTimestamp = parseInt(startTimestamp);
   endTimestamp = parseInt(endTimestamp);
 
-  // Convert UNIX timestamps to datetime objects
-  const startTime = moment.unix(startTimestamp);
-  const endTime = moment.unix(endTimestamp);
 
   // Calculate $Number$
   const startNumber = calculateNumber(startTimestamp);
@@ -79,12 +80,14 @@ async function main(startTimestamp, endTimestamp, jobId, client, channel) {
   channel = parseInt(channel);
   // URL prefix
   const urlPrefixes = [
+    "https://vs-cmaf-push-uk.live.fastly.md.bbci.co.uk/x=4/i=urn:bbc:pips:service:bbc_news_channel_hd/",
+    "https://vs-cmaf-pushb-ntham-gcomm-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_world_news_north_america/",
     "https://vs-cmaf-push-uk.live.fastly.md.bbci.co.uk/x=4/i=urn:bbc:pips:service:bbc_one_hd/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_wales_hd/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_scotland_hd/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_northern_ireland_hd/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_channel_islands/",
-    "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_east_hd/",
+    "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_east/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_east_midlands/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_east_yorkshire/",
     "https://vs-cmaf-push-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_london/",
@@ -95,7 +98,7 @@ async function main(startTimestamp, endTimestamp, jobId, client, channel) {
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_south_west/",
     "https://vs-cmaf-pushb-uk.live.cf.md.bbci.co.uk/x=4/i=urn:bbc:pips:service:bbc_one_west/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_west_midlands/",
-    "https://vs-cmaf-pushb-uk-live.bbcfmt.s.llnwi.net/x=4/i=urn:bbc:pips:service:bbc_one_yorks/",
+    "https://vs-cmaf-pushb-uk.live.cf.md.bbci.co.uk/x=4/i=urn:bbc:pips:service:bbc_one_yorks/",
     "https://vs-cmaf-push-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_two_hd/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_two_northern_ireland_hd/",
     "https://vs-cmaf-pushb-uk.live.fastly.md.bbci.co.uk/x=4/i=urn:bbc:pips:service:bbc_two_wales_digital/",
@@ -104,11 +107,9 @@ async function main(startTimestamp, endTimestamp, jobId, client, channel) {
     "https://b2-hobir-sky.live.bidi.net.uk/vs-cmaf-pushb-uk/x=4/i=urn:bbc:pips:service:cbbc_hd/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:cbeebies_hd/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_scotland_hd/",
-    "https://vs-cmaf-push-uk.live.fastly.md.bbci.co.uk/x=4/i=urn:bbc:pips:service:bbc_news_channel_hd/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_parliament/",
     "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_alba/",
-    "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:s4cpbs/",
-    "https://vs-cmaf-pushb-ntham-gcomm-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_world_news_north_america/",
+    "https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:s4cpbs/"
   ];
   const urlPrefix = urlPrefixes[channel];
   const audioInitUrl = `${urlPrefix}a=pa3/al=en-GB/ap=main/b=96000/segment.init`;
