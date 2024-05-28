@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { fail } from '@sveltejs/kit';
-import type { Actions } from './$types'
+import type { Actions } from './$types';
 export const actions: Actions = {
 	default: async ({ request }) => {
 		const data = await request.formData();
@@ -24,7 +24,7 @@ export const actions: Actions = {
 		// Make the timestamps in London time
 		let startTimestamp =
 			new Date(Date.UTC(2024, startMonth - 1, startDay, startHour, startMinute)).getTime() / 1000;
-			console.log('duration: ', duration)
+		console.log('duration: ', duration);
 		let endTimestamp = startTimestamp + duration;
 		// Adjust the timestamps for the time zone difference
 		startTimestamp -= 7200;
@@ -39,17 +39,17 @@ export const actions: Actions = {
 		// If the start or end timestamps are in the future
 		if (startTimestamp > Date.now() / 1000 || endTimestamp > Date.now() / 1000) {
 			console.log('future');
-			return fail(400, { future: true })
+			return fail(400, { future: true });
 		}
 		// If the start and end timestamps are more than 1 hour apart
 		if (endTimestamp - startTimestamp > 3600) {
-				console.log('no hours');
-				return fail(400, { tooLong: true });
+			console.log('no hours');
+			return fail(400, { tooLong: true });
 		}
 		if (channel === 1) {
 			console.log('contacting vell');
 			// Contact 100.64.1.2:3001 via AXIOS
-			console.log(`body: ${startTimestamp}, ${endTimestamp}, ${channel}`)
+			console.log(`body: ${startTimestamp}, ${endTimestamp}, ${channel}`);
 			const response = await axios.post('http://100.64.1.5:3001/downloadVideo', {
 				startTimestamp: startTimestamp,
 				endTimestamp: endTimestamp,
@@ -70,7 +70,7 @@ export const actions: Actions = {
 		) {
 			console.log('contacting local server');
 			// Contact 100.64.1.2:3001 via AXIOS
-			console.log(`body: ${startTimestamp}, ${endTimestamp}, ${channel}`)
+			console.log(`body: ${startTimestamp}, ${endTimestamp}, ${channel}`);
 			const response = await axios.post('http://127.0.0.1:3001/downloadVideo', {
 				startTimestamp: startTimestamp,
 				endTimestamp: endTimestamp,
@@ -79,7 +79,7 @@ export const actions: Actions = {
 			return { status: 200, body: await response.data };
 		} else {
 			console.log('contacting hp');
-			console.log(`body: ${startTimestamp}, ${endTimestamp}, ${channel}`)
+			console.log(`body: ${startTimestamp}, ${endTimestamp}, ${channel}`);
 			// Contact 100.64.1.3:3001 via AXIOS
 			const response = await axios.post('http://100.64.1.3:3001/downloadVideo', {
 				startTimestamp: startTimestamp,

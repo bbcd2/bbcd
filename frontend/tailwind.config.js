@@ -26,7 +26,7 @@ const config = {
 				}
 			},
 			spacing: {
-				'17': '17rem',
+				17: '17rem'
 			}
 		},
 		fontFamily: {

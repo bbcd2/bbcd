@@ -3,7 +3,12 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { Label, Input, Select, Button, Toast, Banner } from 'flowbite-svelte';
-	import { ArrowRightOutline, LinkOutline, PaperPlaneOutline, BullhornSolid } from 'flowbite-svelte-icons';
+	import {
+		ArrowRightOutline,
+		LinkOutline,
+		PaperPlaneOutline,
+		BullhornSolid
+	} from 'flowbite-svelte-icons';
 	export let data;
 	$: ({ session, supabase } = data);
 	// Get the last 15 records from the recordings table
@@ -426,10 +431,22 @@
 									startDate.getMonth() === endDate.getMonth() &&
 									startDate.getFullYear() === endDate.getFullYear();
 								return sameDay
-									? startDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit', timeZone: 'Europe/London' })
-									: startDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit', timeZone: 'Europe/London' }) +
+									? startDate.toLocaleDateString('en-GB', {
+											month: 'short',
+											day: '2-digit',
+											timeZone: 'Europe/London'
+										})
+									: startDate.toLocaleDateString('en-GB', {
+											month: 'short',
+											day: '2-digit',
+											timeZone: 'Europe/London'
+										}) +
 											' - ' +
-											endDate.toLocaleDateString('en-GB', { month: 'short', day: '2-digit', timeZone: 'Europe/London' });
+											endDate.toLocaleDateString('en-GB', {
+												month: 'short',
+												day: '2-digit',
+												timeZone: 'Europe/London'
+											});
 							})()}
 						</td>
 						<td class="p-2 border-2 border-black dark:border-white">
